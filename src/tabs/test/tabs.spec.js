@@ -190,6 +190,59 @@ describe('tabs', function() {
           expect(execOrder).toEqual([ 'deselect2', 'select1' ]);
     });
   });
+  
+  describe('tab deselect returns false disables navigation',function() {
+
+    beforeEach(inject(function($compile, $rootScope) {
+      scope = $rootScope.$new();
+
+      function makeTab(active) {
+        return {
+          active: !!active,
+          select: jasmine.createSpy('Select'),
+          deselect: jasmine.createSpy('Deselect')
+        };
+      }
+      
+      scope.deselectTab = function(allow){
+        return allow ;
+      };
+      
+      scope.tabs = [
+        makeTab(true), makeTab()
+      ];
+      
+      elm = $compile([
+        '<tabset>',
+        '  <tab active="tabs[0].active" deselect="deselectTab(false)">',
+        '  </tab>',
+        '  <tab active="tabs[1].active" >',
+        '  </tab>',
+        '</tabset>'
+      ].join('\n'))(scope);
+      scope.$apply();
+    }));
+
+    function expectTabActive(activeTab) {
+      var _titles = titles();
+      angular.forEach(scope.tabs, function(tab, i) {
+        if (activeTab === tab) {
+          expect(tab.active).toBe(true,'active tab');
+          expect(_titles.eq(i)).toHaveClass('active','_titles active class');
+          expect(contents().eq(i)).toHaveClass('active', 'contents active class');
+        } else {
+          expect(tab.active).toBe(false, 'inactive');
+          expect(_titles.eq(i)).not.toHaveClass('active','inactive class');
+        }
+      });
+    }
+
+    it('should call deselect, then stay on current tab when deselect returns false', function() {
+          // Select second tab
+          titles().eq(1).find('a').click();
+          expectTabActive(scope.tabs[0]);
+    });
+   });
 
   describe('ng-repeat', function() {
 

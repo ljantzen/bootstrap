@@ -14,14 +14,25 @@ angular.module('ui.bootstrap.tabs', [])
       tabs = ctrl.tabs = $scope.tabs = [];
 
   ctrl.select = function(selectedTab) {
+	var allow=true;
+	var prevSelected;
     angular.forEach(tabs, function(tab) {
       if (tab.active && tab !== selectedTab) {
+		prevSelected = tab;
         tab.active = false;
-        tab.onDeselect();
+        var result = tab.onDeselect();
+        if (typeof result != 'undefined') {
+			allow = result;
+		}
       }
     });
-    selectedTab.active = true;
-    selectedTab.onSelect();
+    if ( allow ) {
+		selectedTab.active = true;
+		selectedTab.onSelect();
+    } else {
+		prevSelected.active= true;
+		selectedTab.active=false;
+	}
   };
 
   ctrl.addTab = function addTab(tab) {
