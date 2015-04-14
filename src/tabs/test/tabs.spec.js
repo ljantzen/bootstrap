@@ -191,7 +191,7 @@ describe('tabs', function() {
     });
   });
   
-  describe('tab deselect returns false disables navigation',function() {
+  describe('tab deselect',function() {
 
     beforeEach(inject(function($compile, $rootScope) {
       scope = $rootScope.$new();
@@ -205,13 +205,11 @@ describe('tabs', function() {
       }
       
       scope.deselectTab = function(allow){
-        return allow ;
+        return allow;
       };
-      
       scope.tabs = [
         makeTab(true), makeTab()
       ];
-      
       elm = $compile([
         '<tabset>',
         '  <tab active="tabs[0].active" deselect="deselectTab(false)">',
